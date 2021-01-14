@@ -18,5 +18,3 @@ redshift &
 safeeyes &
 # polkit
 # /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-# for ssh in termite
-export TERM="xterm-256color"
