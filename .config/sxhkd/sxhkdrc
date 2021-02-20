@@ -1,0 +1,82 @@
+# The Simple X Hotkey Daemon is the program used by LARBS to map most of the
+# dwm-independent commands.  This file is pretty readable, so I'll let you read
+# it.
+
+# The keys NOT bound here by sxhkd, but by dwm or i3 are:
+# The t thru p keys on the top row
+# The f thru ; keys on the home row
+# The b key on the bottom row (hides the bar in either case)
+
+# Basic binds
+super + Return
+	$TERMINAL
+super + d
+	rofi -show drun -show-icons
+super + shift + d
+	rofi -show
+super + w
+	rofi -show window -show-icons
+super + r
+	$TERMINAL -e ranger
+super + b
+	firefox
+super + e
+	thunderbird
+super + p
+	$TERMINAL -e python
+super + s
+	skypeforlinux
+super + t
+	telegram-desktop
+
+# Et cetera...
+super + grave
+	dmenuunicode
+super + shift + x
+	prompt "Shutdown computer?" "sudo -A shutdown -h now"
+super + shift + BackSpace
+	prompt "Reboot computer?" "sudo -A reboot"
+super + shift + Escape
+	prompt 'Leave Xorg?' 'killall Xorg'
+#super + x
+#	ifinstalled slock && ( slock & xset dpms force off ; mpc pause ; pauseallmpv )
+XF86Launch1
+	xset dpms force off
+XF86TouchpadToggle
+	(synclient | grep "TouchpadOff.*1" && synclient TouchpadOff=0) || synclient TouchpadOff=1
+XF86Touchpad{Off,On}
+	synclient TouchpadOff={1,0}
+XF86MonBrightnessDown
+	brightnessctl set 10%-
+XF86MonBrightnessUp
+	brightnessctl set +10%
+
+
+Print
+	flameshot gui
+# Audiokeys
+XF86AudioMute
+	amixer sset Master toggle; pkill -RTMIN+10 $STATUSBAR
+XF86Audio{Raise,Lower}Volume
+	amixer sset Master 5%{+,-}; pkill -RTMIN+10 $STATUSBAR
+
+XF86PowerOff
+	prompt "Shutdown computer?" "sudo -A shutdown -h now"
+XF86Sleep
+	prompt 'Hibernate computer?' 'sudo -A zzz'
+XF86ScreenSaver
+	mpc pause; pauseallmpv; i3lock -e -f -c 1d2021; xset dpms force off
+
+# Function keys
+# Change display
+super + F3
+	displayselect
+# Hibernate
+super + F4
+	prompt 'Hibernate computer?' 'sudo -A zzz -Z'
+#super + F5 is unbound.
+# Start torrent daemon/open interface
+# Mount a USB drive or Android device
+super + {F9,F10}
+	{dmenumount,dmenuumount}
+

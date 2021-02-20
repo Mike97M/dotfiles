@@ -8,13 +8,16 @@ cbatticon -u 5 &
 volumeicon &
 # dropbox to sync org notes
 dropbox &
+# night colors changes
+redshift &
 # screenshot tool
 flameshot &
 # connection with phone
 kdeconnect-indicator &
-# night colors changes
-redshift &
 # regular eye breaks
 safeeyes &
 # polkit
 # /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+
+# shortcut for opening apps
+sxhkd &
