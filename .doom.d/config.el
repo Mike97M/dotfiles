@@ -25,6 +25,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
+;; usually I use doom-one, trying something new
 (setq doom-theme 'doom-one)
 
 ;; If you use `org' and don't want your org files in the default location below,
@@ -139,8 +140,20 @@
 ;;   )
 
 ;; (require 'pyenv-mode-auto)
-(add-hook 'vue-mode-hook #'lsp!)
-
+;; (add-hook 'vue-mode-hook #'lsp!)
+(use-package! lsp
+  :init
+  (setq lsp-pyls-plugins-pylint-enabled t)
+  (setq lsp-pyls-plugins-autopep8-enabled nil)
+  (setq lsp-pyls-plugins-yapf-enabled t)
+  (setq lsp-pyls-plugins-pyflakes-enabled nil)
+)
+(after! python
+  :init
+  (setq! +lsp-company-backends
+         (if (featurep! :editor snippets)
+             '(:separate company-yasnippet company-capf)
+           'company-capf)))
 (defun ml/bash ()
   "Start a terminal emulator in a new window."
   (interactive)
