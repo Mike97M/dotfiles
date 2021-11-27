@@ -19,7 +19,7 @@
        ;;japanese
 
        :completion
-       ;; (company +auto)           ; the ultimate code completion backend
+       (company +auto)           ; the ultimate code completion backend
        helm              ; the *other* search engine for love and life
        ;; ido               ; the other *other* search engine...
        ivy               ; a search engine for love and life
@@ -69,6 +69,7 @@
        electric          ; smarter, keyword-based electric-indent
        ibuffer           ; interactive buffer management
        vc                ; version-control and Emacs, sitting in a tree
+       undo              ; fix undo not workin https://github.com/hlissner/doom-emacs/issues/4135
 
        :term
        ;;eshell            ; a consistent, cross-platform shell (WIP)
@@ -152,6 +153,7 @@
        ;;purescript        ; javascript, but functional
        (python
         ;; +pyenv
+        +pyright
         +lsp)            ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs
