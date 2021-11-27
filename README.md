@@ -1,4 +1,6 @@
-## How to use git to save these:
-Using an alias for git with custom configuration, the alias is `config`.
+## How to manage
+Using GNU Stow
 
-More info: (https://www.atlassian.com/git/tutorials/dotfiles)[https://www.atlassian.com/git/tutorials/dotfiles]
+Clone this to home directory
+Add specific dotfiles `stow name`
+Remove specific dotfiles `stow -D name`
