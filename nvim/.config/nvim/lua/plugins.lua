@@ -43,3 +43,4 @@ require "paq" {
 	"akinsho/org-bullets.nvim",
 	"lukas-reineke/headlines.nvim",
 }
+require('onedark').load()
