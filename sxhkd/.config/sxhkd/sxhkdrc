@@ -50,10 +50,10 @@ XF86MonBrightnessUp
 Print
 	flameshot gui
 # Audiokeys
-#XF86AudioMute
-#	amixer sset Master toggle; pkill -RTMIN+10 $STATUSBAR
-#XF86Audio{Raise,Lower}Volume
-#	amixer sset Master 5%{+,-}; pkill -RTMIN+10 $STATUSBAR
+XF86AudioMute
+	amixer sset Master toggle; pkill -RTMIN+10 $STATUSBAR
+XF86Audio{Raise,Lower}Volume
+	amixer sset Master 5%{+,-}; pkill -RTMIN+10 $STATUSBAR
 #
 #XF86PowerOff
 #	prompt "Shutdown computer?" "sudo -A shutdown -h now"

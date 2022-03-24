@@ -17,7 +17,7 @@ require('lsp')
 
 
 require("which-key").setup {}
-require('onedark').setup()
+
 require('lualine').setup {
 	options = {
 		theme = 'onedark'
@@ -173,7 +173,8 @@ require'nvim-treesitter.configs'.setup {
   ensure_installed = {'org'}, -- Or run :TSUpdate org
 }
 
-require('orgmode').setup({
+-- require('orgmode').setup({
+require('orgmode').setup_ts_grammar({
   org_agenda_files = {'~/Dropbox/org/*', '~/my-orgs/**/*'},
   org_default_notes_file = '~/Dropbox/org/refile.org',
 })
