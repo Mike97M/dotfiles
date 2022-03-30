@@ -2,7 +2,9 @@ require "paq" {
     "savq/paq-nvim";                  -- Let Paq manage itself
     -- lsp autocomplete
     "neovim/nvim-lspconfig";          -- Mind the semi-colons
+	"williamboman/nvim-lsp-installer";
     'hrsh7th/cmp-nvim-lsp';
+    'hrsh7th/cmp-nvim-lua';
     'hrsh7th/cmp-buffer';
     'hrsh7th/cmp-path';
     'hrsh7th/cmp-cmdline';
@@ -38,9 +40,9 @@ require "paq" {
     -- git
     "TimUntersberger/neogit",
     -- beorg - ord mode
---    "nvim-neorg/neorg"
-	"kristijanhusak/orgmode.nvim",
-	"akinsho/org-bullets.nvim",
-	"lukas-reineke/headlines.nvim",
+   -- "nvim-neorg/neorg"
+	-- "kristijanhusak/orgmode.nvim",
+	-- "akinsho/org-bullets.nvim",
+	-- "lukas-reineke/headlines.nvim",
 }
 require('onedark').load()
