@@ -20,7 +20,6 @@ o.tabstop = 4
 -- ... snip ... 
 
 -- window-local options
-wo.number = false
 wo.wrap = false
 
 wo.number = true
@@ -30,3 +29,6 @@ wo.cursorline = true
 bo.expandtab = true
 
 
+vim.wo.foldmethod="expr"
+vim.o.foldexpr="nvim_treesitter#foldexpr()"  
+vim.wo.foldenable=false -- can be enabled directly in opened file - using 'zi' - toogle fold

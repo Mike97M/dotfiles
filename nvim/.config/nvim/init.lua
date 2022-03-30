@@ -152,35 +152,72 @@ neogit.setup {
 	}
 }
 
--- ord mode
-local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-parser_config.org = {
-  install_info = {
-    url = 'https://github.com/milisims/tree-sitter-org',
-    revision = 'main',
-    files = {'src/parser.c', 'src/scanner.cc'},
-  },
-  filetype = 'org',
+-- org mode
+-- local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+-- parser_config.org = {
+--   install_info = {
+--     url = 'https://github.com/milisims/tree-sitter-org',
+--     revision = 'main',
+--     files = {'src/parser.c', 'src/scanner.cc'},
+--   },
+--   filetype = 'org',
+-- }
+
+-- require'nvim-treesitter.configs'.setup {
+--   -- If TS highlights are not enabled at all, or disabled via `disable` prop, highlighting will fallback to default Vim syntax highlighting
+--   highlight = {
+--     enable = true,
+--     -- disable = {'org'}, -- Remove this to use TS highlighter for some of the highlights (Experimental)
+--     additional_vim_regex_highlighting = {'org'}, -- Required since TS highlighter doesn't support all syntax features (conceal)
+--   },
+--   ensure_installed = {'org'}, -- Or run :TSUpdate org
+-- }
+
+-- -- require('orgmode').setup({
+-- require('orgmode').setup_ts_grammar({
+  -- org_agenda_files = {'~/Dropbox/org/*', '~/my-orgs/**/*'},
+  -- org_default_notes_file = '~/Dropbox/org/refile.org',
+-- })
+
+
+-- require("org-bullets").setup {
+-- 	symbols = { "◉", "○", "✸", "✿" }
+-- }
+-- require("headlines").setup()
+-- org mode end
+
+-- local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+
+-- -- These two are optional and provide syntax highlighting
+-- -- for Neorg tables and the @document.meta tag
+-- parser_configs.norg_meta = {
+--     install_info = {
+--         url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
+--         files = { "src/parser.c" },
+--         branch = "main"
+--     },
+-- }
+
+-- parser_configs.norg_table = {
+--     install_info = {
+--         url = "https://github.com/nvim-neorg/tree-sitter-norg-table",
+--         files = { "src/parser.c" },
+--         branch = "main"
+--     },
+-- }
+require('nvim-treesitter.configs').setup {
+    ensure_installed = { "html", "python", "lua", "javascript", "markdown","go" },
+	highlight = {
+        enable = true,
+        use_languagetree = true
+    },
+	indent = {enable = true},
+	-- incremental_selection = { enable = true },
+    textobjects = { enable = true },
 }
+ -- require('neorg').setup {
+	 -- load = {
+ --        ["core.defaults"] = {}
+ --    }
+-- }
 
-require'nvim-treesitter.configs'.setup {
-  -- If TS highlights are not enabled at all, or disabled via `disable` prop, highlighting will fallback to default Vim syntax highlighting
-  highlight = {
-    enable = true,
-    -- disable = {'org'}, -- Remove this to use TS highlighter for some of the highlights (Experimental)
-    additional_vim_regex_highlighting = {'org'}, -- Required since TS highlighter doesn't support all syntax features (conceal)
-  },
-  ensure_installed = {'org'}, -- Or run :TSUpdate org
-}
-
--- require('orgmode').setup({
-require('orgmode').setup_ts_grammar({
-  org_agenda_files = {'~/Dropbox/org/*', '~/my-orgs/**/*'},
-  org_default_notes_file = '~/Dropbox/org/refile.org',
-})
-
-
-require("org-bullets").setup {
-	symbols = { "◉", "○", "✸", "✿" }
-}
-require("headlines").setup()
