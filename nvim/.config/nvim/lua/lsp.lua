@@ -70,6 +70,7 @@ cmp.setup({
 		}),
 		['<CR>'] = cmp.mapping.confirm({ select = true }),
 	},
+
 	sources = cmp.config.sources({
 		{ name = 'nvim_lua' },
 		{ name = 'nvim_lsp' },
@@ -104,6 +105,7 @@ local servers = {
 	"yamlls",
 	"gopls",
 	"sumneko_lua",
+	"html",
 }
 
 for _, name in pairs(servers) do
