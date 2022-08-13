@@ -4,17 +4,35 @@
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
 	local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+
 	local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
+	local rc = client.resolved_capabilities
+
+	if client.name == 'pyright' then
+		rc.hover = false
+		vim.keymap.set("n", "<Leader>ii", "<cmd>PyrightOrganizeImports<CR>", {
+			buffer = bufnr,
+			silent = true,
+			noremap = true,
+		})
+	end
+
+	if client.name == 'pylsp' then
+		rc.rename = false
+		rc.signature_help = false
+	end
 	--Enable completion triggered by <c-x><c-o>
 	buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
+	--LSP signature
+	require('lsp_signature').on_attach()
 	-- Mappings.
-	local opts = { noremap=true, silent=true }
+	local opts = { noremap = true, silent = true }
 
 	-- See `:help vim.lsp.*` for documentation on any of the below functions
 	buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-	buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+	buf_set_keymap('n', 'gd', '<cmd>tab split | lua vim.lsp.buf.definition()<CR>', opts)
 	buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
 	buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
 	buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
@@ -28,14 +46,28 @@ local on_attach = function(client, bufnr)
 	buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
 	buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
 	buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+	buf_set_keymap("n",
+		"gH",
+		"<CMD>lua vim.diagnostic.open_float(0, { scope = 'line', source = 'always', border = 'rounded' })<CR>",
+		opts
+	)
 	buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-	-- buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+	buf_set_keymap('n', '<space>F', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 	-- Set some keybinds conditional on server capabilities
-	if client.resolved_capabilities.document_formatting then
-		buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-	elseif client.resolved_capabilities.document_range_formatting then
-		buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
-	end
+	-- if client.resolved_capabilities.document_formatting then
+	-- 	buf_set_keymap("n", "<space>ff", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+	-- elseif client.resolved_capabilities.document_range_formatting then
+	-- 	buf_set_keymap("n", "<space>ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
+	-- end
+	-- format on save
+	local augroup = vim.api.nvim_create_augroup("LspFormatting", { clear = true })
+	vim.api.nvim_create_autocmd("BufWritePre", {
+		group = augroup,
+		buffer = bufnr,
+		callback = function()
+			vim.lsp.buf.formatting()
+		end,
+	})
 end
 
 -- nvim_lsp.pylsp.setup({on_attach = on_attach})
@@ -46,7 +78,7 @@ vim.opt.completeopt = { "menu", "menuone", "noselect" }
 -- Don't show the dumb matching stuff.
 vim.opt.shortmess:append "c"
 
-local cmp = require'cmp'
+local cmp = require 'cmp'
 
 cmp.setup({
 	snippet = {
@@ -76,7 +108,7 @@ cmp.setup({
 		{ name = 'nvim_lsp' },
 		{ name = 'vsnip' },
 	}, {
-			{ name = 'buffer' },
+		{ name = 'buffer' },
 	})
 })
 
@@ -92,7 +124,7 @@ cmp.setup.cmdline(':', {
 	sources = cmp.config.sources({
 		{ name = 'path' }
 	}, {
-			{ name = 'cmdline' }
+		{ name = 'cmdline' }
 	})
 })
 local lsp_installer = require "nvim-lsp-installer"
@@ -101,6 +133,7 @@ local lsp_installer = require "nvim-lsp-installer"
 local servers = {
 	"bashls",
 	"pyright",
+	"pylsp",
 	"volar",
 	"yamlls",
 	"gopls",
@@ -117,21 +150,54 @@ for _, name in pairs(servers) do
 end
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-local enhance_server_opts = {
-	-- Provide settings that should only apply to the "eslintls" server
-	["gopls"] = function(opts)
-		opts.settings = {
-			gopls = {
-				analyses = {
-					unusedparams = true,
+local settings = {
+	pyright = {
+		python = {
+			analysis = {
+				useLibraryCodeForTypes = true,
+				diagnosticSeverityOverrides = {
+					reportGeneralTypeIssues = "none",
+					reportOptionalMemberAccess = "none",
+					reportOptionalSubscript = "none",
+					reportPrivateImportUsage = "none",
 				},
-				staticcheck = true,
+				autoImportCompletions = true,
 			},
-			format = {
-				enable = true,
-			},
+			linting = { pylintEnabled = true }
 		}
-	end,
+	},
+	pylsp = {
+		pylsp = {
+			builtin = {
+				installExtraArgs = { 'flake8', 'pycodestyle', 'pydocstyle', 'pyflakes', 'pylint', 'yapf' },
+			},
+			plugins = {
+				jedi_completion = { enabled = false },
+				rope_completion = { enabled = false },
+				flake8 = { enabled = false },
+				pyflakes = { enabled = false },
+				pylint = { enabled = true },
+				pycodestyle = {
+					ignore = { 'E226', 'E266', 'E302', 'E303', 'E304', 'E305', 'E402', 'C0103', 'W0104', 'W0621', 'W391', 'W503', 'W504' },
+					maxLineLength = 99,
+				},
+			},
+		},
+	},
+	-- -- Provide settings that should only apply to the "eslintls" server
+	-- ["gopls"] = function(opts)
+	-- 	opts.settings = {
+	-- 		gopls = {
+	-- 			analyses = {
+	-- 				unusedparams = true,
+	-- 			},
+	-- 			staticcheck = true,
+	-- 		},
+	-- 		format = {
+	-- 			enable = true,
+	-- 		},
+	-- 	}
+	-- end,
 }
 
 lsp_installer.on_server_ready(function(server)
@@ -142,11 +208,10 @@ lsp_installer.on_server_ready(function(server)
 		format = { enable = true },
 	}
 
-	if enhance_server_opts[server.name] then
-		-- Enhance the default opts with the server-specific ones
-		enhance_server_opts[server.name](opts)
-	end
 
+	if settings[server.name] then
+		opts['settings'] = settings[server.name]
+	end
 	server:setup(opts)
 end)
 

@@ -9,6 +9,7 @@ require "paq" {
     'hrsh7th/cmp-path';
     'hrsh7th/cmp-cmdline';
     "hrsh7th/nvim-cmp";
+	"ray-x/lsp_signature.nvim";
     -- snipets
     "hrsh7th/cmp-vsnip";
     "hrsh7th/vim-vsnip";
