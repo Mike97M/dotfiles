@@ -150,6 +150,7 @@ for _, name in pairs(servers) do
 end
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- Settings inspired from: https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=reddit&utm_medium=web2x&context=3
 local settings = {
 	pyright = {
 		python = {
@@ -184,7 +185,6 @@ local settings = {
 			},
 		},
 	},
-	-- -- Provide settings that should only apply to the "eslintls" server
 	-- ["gopls"] = function(opts)
 	-- 	opts.settings = {
 	-- 		gopls = {
