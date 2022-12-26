@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+yt_link=$(/usr/bin/wl-paste)
+/usr/bin/notify-send "Playing YT video" "$yt_link"
+mpv "$yt_link"
