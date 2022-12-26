@@ -17,7 +17,8 @@ o.clipboard = 'unnamedplus'
 o.hidden = true
 o.shiftwidth = 4
 o.tabstop = 4
--- ... snip ... 
+
+-- ... snip ...
 
 -- window-local options
 wo.wrap = false
@@ -29,6 +30,7 @@ wo.cursorline = true
 bo.expandtab = true
 
 
-vim.wo.foldmethod="expr"
-vim.o.foldexpr="nvim_treesitter#foldexpr()"  
-vim.wo.foldenable=false -- can be enabled directly in opened file - using 'zi' - toogle fold
+vim.wo.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.wo.foldenable = false -- can be enabled directly in opened file - using 'zi' - toogle fold
+opt.colorcolumn = "80"

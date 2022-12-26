@@ -1,4 +1,5 @@
--- local nvim_lsp = require('lspconfig')
+local nvim_lsp = require('lspconfig')
+-- local lspconfig = require('lspconfig')
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -7,7 +8,7 @@ local on_attach = function(client, bufnr)
 
 	local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
-	local rc = client.resolved_capabilities
+	local rc = client.server_capabilities
 
 	if client.name == 'pyright' then
 		rc.hover = false
@@ -32,7 +33,7 @@ local on_attach = function(client, bufnr)
 
 	-- See `:help vim.lsp.*` for documentation on any of the below functions
 	buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-	buf_set_keymap('n', 'gd', '<cmd>tab split | lua vim.lsp.buf.definition()<CR>', opts)
+	buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
 	buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
 	buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
 	buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
@@ -52,7 +53,7 @@ local on_attach = function(client, bufnr)
 		opts
 	)
 	buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-	buf_set_keymap('n', '<space>F', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+	buf_set_keymap('n', '<space>F', '<cmd>lua vim.lsp.buf.format {async=True}<CR>', opts)
 	-- Set some keybinds conditional on server capabilities
 	-- if client.resolved_capabilities.document_formatting then
 	-- 	buf_set_keymap("n", "<space>ff", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
@@ -90,8 +91,8 @@ cmp.setup({
 		end,
 	},
 	mapping = {
-		['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's', 'c' }),
-		['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's', 'c' }),
+		['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's', 'c' }),
+		['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's', 'c' }),
 		['<C-d>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
 		['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
 		['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
@@ -127,8 +128,16 @@ cmp.setup.cmdline(':', {
 		{ name = 'cmdline' }
 	})
 })
-local lsp_installer = require "nvim-lsp-installer"
+-- local lsp_installer = require "mason"
 
+-- require("mason").setup()
+require("mason").setup {
+    ui = {
+        icons = {
+            package_installed = "✓"
+        }
+    }
+}
 -- Include the servers you want to have installed by default below
 local servers = {
 	"bashls",
@@ -141,15 +150,18 @@ local servers = {
 	"html",
 }
 
-for _, name in pairs(servers) do
-	local server_is_found, server = lsp_installer.get_server(name)
-	if server_is_found and not server:is_installed() then
-		print("Installing " .. name)
-		server:install()
-	end
-end
+require("mason-lspconfig").setup {
+    ensure_installed = servers,
+}
+-- for _, name in pairs(servers) do
+-- 	local server_is_found, server = lsp_installer.get_server(name)
+-- 	if server_is_found and not server:is_installed() then
+-- 		print("Installing " .. name)
+-- 		server:install()
+-- 	end
+-- end
 -- Setup lspconfig.
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- Settings inspired from: https://www.reddit.com/r/neovim/comments/sazbw6/comment/hw1s6qg/?utm_source=reddit&utm_medium=web2x&context=3
 local settings = {
 	pyright = {
@@ -200,7 +212,7 @@ local settings = {
 	-- end,
 }
 
-lsp_installer.on_server_ready(function(server)
+require('mason-lspconfig').setup_handlers({function(server)
 	-- Specify the default options which we'll use to setup all servers
 	local opts = {
 		on_attach = on_attach,
@@ -212,8 +224,11 @@ lsp_installer.on_server_ready(function(server)
 	if settings[server.name] then
 		opts['settings'] = settings[server.name]
 	end
-	server:setup(opts)
-end)
+	-- server:setup(opts)
+	nvim_lsp[server].setup(opts)
+  -- lspconfig[server].setup({})
+end,
+})
 
 -- require'lspconfig'.pyright.setup{ on_attach = on_attach}
 -- nvim_lsp = require "lspconfig"

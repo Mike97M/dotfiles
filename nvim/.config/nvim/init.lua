@@ -1,7 +1,7 @@
 -- TODO Configure auto-session and terminal
-require('settings')    -- lua/settings.lua
+require('settings') -- lua/settings.lua
 require('plugins')
-require('maps')        -- lua/maps.lua
+require('maps') -- lua/maps.lua
 require('lsp')
 
 --- inspired by https://gist.github.com/benfrain/97f2b91087121b2d4ba0dcc4202d252f
@@ -12,7 +12,7 @@ require('lsp')
 -- https://oroques.dev/notes/neovim-init/
 -- https://github.com/kyazdani42/nvim-tree.lua
 -- https://github.com/NTBBloodbath/doom-nvim
--- 
+--
 -- https://blog.inkdrop.app/how-to-set-up-neovim-0-5-modern-plugins-lsp-treesitter-etc-542c3d9c9887
 
 
@@ -38,13 +38,13 @@ require('lualine').setup {
 -- local ts = require("nvim-treesitter.configs")
 -- ts.setup({ ensure_installed = "maintained", highlight = { enable = true } })
 
-require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
+require 'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 --vim.api.nvim_set_keymap('n', '$', "<cmd>lua require'hop'.hint_words()<cr>", {})
 
 local opts = {
 	log_level = 'info',
 	auto_session_enable_last_session = false,
-	auto_session_root_dir = vim.fn.stdpath('data').."/sessions/",
+	auto_session_root_dir = vim.fn.stdpath('data') .. "/sessions/",
 	auto_session_enabled = true,
 	auto_save_enabled = true,
 	auto_restore_enabled = true,
@@ -53,9 +53,9 @@ local opts = {
 
 require('auto-session').setup(opts)
 require('session-lens').setup {
-	path_display={'shorten'},
+	path_display = { 'shorten' },
 }
-require'toggleterm'.setup {
+require 'toggleterm'.setup {
 	size = function(term)
 		if term.direction == "horizontal" then
 			return 15
@@ -76,7 +76,7 @@ require'toggleterm'.setup {
 	shell = vim.o.shell, -- change the default shell
 }
 function _G.set_terminal_keymaps()
-	local opts = {noremap = true}
+	local opts = { noremap = true }
 	vim.api.nvim_buf_set_keymap(0, 't', '<esc>', [[<C-\><C-n>]], opts)
 	vim.api.nvim_buf_set_keymap(0, 't', 'jk', [[<C-\><C-n>]], opts)
 	vim.api.nvim_buf_set_keymap(0, 't', '<C-h>', [[<C-\><C-n><C-W>h]], opts)
@@ -91,20 +91,15 @@ vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 
 -- following options are the default
 -- each of these are documented in `:help nvim-tree.OPTION_NAME`
-require'nvim-tree'.setup {
+require 'nvim-tree'.setup {
 	disable_netrw       = true,
 	hijack_netrw        = true,
 	open_on_setup       = false,
 	ignore_ft_on_setup  = {},
-	auto_close          = false,
 	open_on_tab         = false,
 	hijack_cursor       = false,
 	update_cwd          = false,
-	update_to_buf_dir   = {
-		enable = true,
-		auto_open = true,
-	},
-	diagnostics = {
+	diagnostics         = {
 		enable = false,
 		icons = {
 			hint = "",
@@ -118,22 +113,18 @@ require'nvim-tree'.setup {
 		update_cwd  = false,
 		ignore_list = {}
 	},
-	system_open = {
+	system_open         = {
 		cmd  = nil,
 		args = {}
 	},
-	filters = {
+	filters             = {
 		dotfiles = false,
 		custom = {}
 	},
-	view = {
-
-
+	view                = {
 		width = 30,
-		height = 30,
 		hide_root_folder = false,
 		side = 'left',
-		auto_resize = false,
 		mappings = {
 			custom_only = false,
 			list = {}
@@ -142,7 +133,7 @@ require'nvim-tree'.setup {
 }
 
 
-require("plenary") 
+require("plenary")
 local neogit = require('neogit')
 
 neogit.setup {
@@ -175,8 +166,8 @@ neogit.setup {
 
 -- -- require('orgmode').setup({
 -- require('orgmode').setup_ts_grammar({
-  -- org_agenda_files = {'~/Dropbox/org/*', '~/my-orgs/**/*'},
-  -- org_default_notes_file = '~/Dropbox/org/refile.org',
+-- org_agenda_files = {'~/Dropbox/org/*', '~/my-orgs/**/*'},
+-- org_default_notes_file = '~/Dropbox/org/refile.org',
 -- })
 
 
@@ -206,18 +197,17 @@ neogit.setup {
 --     },
 -- }
 require('nvim-treesitter.configs').setup {
-    ensure_installed = { "html", "python", "lua", "javascript", "markdown","go" },
+	ensure_installed = { "html", "python", "lua", "javascript", "markdown", "go" },
 	highlight = {
-        enable = true,
-        use_languagetree = true
-    },
-	indent = {enable = true},
+		enable = true,
+		use_languagetree = true
+	},
+	indent = { enable = true },
 	-- incremental_selection = { enable = true },
-    textobjects = { enable = true },
+	textobjects = { enable = true },
 }
- -- require('neorg').setup {
-	 -- load = {
- --        ["core.defaults"] = {}
- --    }
+-- require('neorg').setup {
+-- load = {
+--        ["core.defaults"] = {}
+--    }
 -- }
-
