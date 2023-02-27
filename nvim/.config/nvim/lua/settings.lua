@@ -33,4 +33,5 @@ bo.expandtab = true
 vim.wo.foldmethod = "expr"
 vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 vim.wo.foldenable = false -- can be enabled directly in opened file - using 'zi' - toogle fold
+vim.opt.updatetime = 50
 opt.colorcolumn = "80"
