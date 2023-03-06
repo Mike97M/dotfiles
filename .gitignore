@@ -1,0 +1,10 @@
+bin/.local/bin/django-admin
+bin/.local/bin/f2py
+bin/.local/bin/f2py3
+bin/.local/bin/f2py3.10
+bin/.local/bin/flask
+bin/.local/bin/mitmdump
+bin/.local/bin/mitmproxy
+bin/.local/bin/mitmweb
+bin/.local/bin/sqlformat
+bin/.local/bin/vulture
