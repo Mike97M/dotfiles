@@ -37,8 +37,8 @@ local on_attach = function(client, bufnr)
 	buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
 	buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
 	buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-	buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-	buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+	-- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+	-- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
 	-- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
 	-- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
 	buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
@@ -132,26 +132,27 @@ cmp.setup.cmdline(':', {
 
 -- require("mason").setup()
 require("mason").setup {
-    ui = {
-        icons = {
-            package_installed = "✓"
-        }
-    }
+	ui = {
+		icons = {
+			package_installed = "✓"
+		}
+	}
 }
 -- Include the servers you want to have installed by default below
 local servers = {
 	"bashls",
 	"pyright",
 	"pylsp",
+	"ruff_lsp",
 	"volar",
 	"yamlls",
 	"gopls",
-	"sumneko_lua",
+	"lua_ls",
 	"html",
 }
 
 require("mason-lspconfig").setup {
-    ensure_installed = servers,
+	ensure_installed = servers,
 }
 -- for _, name in pairs(servers) do
 -- 	local server_is_found, server = lsp_installer.get_server(name)
@@ -176,13 +177,13 @@ local settings = {
 				},
 				autoImportCompletions = true,
 			},
-			linting = { pylintEnabled = true }
+			linting = { pylintEnabled = false }
 		}
 	},
 	pylsp = {
 		pylsp = {
 			builtin = {
-				installExtraArgs = { 'flake8', 'pycodestyle', 'pydocstyle', 'pyflakes', 'pylint', 'yapf' },
+				installExtraArgs = { 'flake8', 'pycodestyle', 'pydocstyle', 'pyflakes', 'pylint', 'yapf', 'ruff' },
 			},
 			plugins = {
 				jedi_completion = { enabled = false },
@@ -190,6 +191,7 @@ local settings = {
 				flake8 = { enabled = false },
 				pyflakes = { enabled = false },
 				pylint = { enabled = true },
+				ruff = { enabled = true },
 				pycodestyle = {
 					ignore = { 'E226', 'E266', 'E302', 'E303', 'E304', 'E305', 'E402', 'C0103', 'W0104', 'W0621', 'W391', 'W503', 'W504' },
 					maxLineLength = 99,
@@ -197,6 +199,9 @@ local settings = {
 			},
 		},
 	},
+	-- ruff_lsp = {
+
+	-- },
 	-- ["gopls"] = function(opts)
 	-- 	opts.settings = {
 	-- 		gopls = {
@@ -212,7 +217,8 @@ local settings = {
 	-- end,
 }
 
-require('mason-lspconfig').setup_handlers({function(server)
+
+require('mason-lspconfig').setup_handlers({ function(server)
 	-- Specify the default options which we'll use to setup all servers
 	local opts = {
 		on_attach = on_attach,
@@ -226,10 +232,19 @@ require('mason-lspconfig').setup_handlers({function(server)
 	end
 	-- server:setup(opts)
 	nvim_lsp[server].setup(opts)
-  -- lspconfig[server].setup({})
+	-- lspconfig[server].setup({})
 end,
 })
 
+
+require 'lspconfig'.ruff_lsp.setup {
+	init_options = {
+		settings = {
+			-- Any extra CLI arguments for `ruff` go here.
+			args = {},
+		}
+	}
+}
 -- require'lspconfig'.pyright.setup{ on_attach = on_attach}
 -- nvim_lsp = require "lspconfig"
 -- nvim_lsp.pyright.setup {
