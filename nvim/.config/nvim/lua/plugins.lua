@@ -5,7 +5,6 @@ require "paq" {
 	-- move to mason when i have time
 	"williamboman/mason.nvim";
 	"williamboman/mason-lspconfig.nvim";
-	-- "williamboman/nvim-lsp-installer";
 	'hrsh7th/cmp-nvim-lsp';
 	'hrsh7th/cmp-nvim-lua';
 	'hrsh7th/cmp-buffer';
@@ -42,13 +41,15 @@ require "paq" {
 	-- comments
 	"tpope/vim-commentary",
 	-- git
-	"TimUntersberger/neogit",
+	-- "TimUntersberger/neogit",
 	-- beorg - ord mode
 	-- "nvim-neorg/neorg"
 	-- "kristijanhusak/orgmode.nvim",
 	-- "akinsho/org-bullets.nvim",
 	-- "lukas-reineke/headlines.nvim",
 	-- "folke/tokyonight.nvim"
+	-- copilot
+	"zbirenbaum/copilot.lua"
 }
 require('onedark').load()
 

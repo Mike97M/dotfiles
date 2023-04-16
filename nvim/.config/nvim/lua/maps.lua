@@ -1,34 +1,32 @@
-
 local function map(mode, lhs, rhs, opts)
-  local options = { noremap = true }
-  if opts then
-    options = vim.tbl_extend("force", options, opts)
-  end
-  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+	local options = { noremap = true }
+	if opts then
+		options = vim.tbl_extend("force", options, opts)
+	end
+	vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
 map("n", "s", "<cmd>lua require'hop'.hint_words()<cr>")
-map("n", "<leader>h", "<cmd>lua require'hop'.hint_words()<cr>")
+-- map("n", "<leader>h", "<cmd>lua require'hop'.hint_words()<cr>")
 map("n", "<leader>p", "<cmd>SearchSession<cr>")
-map("n", "<leader>l", "<cmd>lua require'hop'.hint_lines()<cr>")
+-- map("n", "<leader>l", "<cmd>lua require'hop'.hint_lines()<cr>")
 map("v", "<leader>h", "<cmd>lua require'hop'.hint_words()<cr>")
-map("v", "<leader>l", "<cmd>lua require'hop'.hint_lines()<cr>")
+-- map("v", "<leader>l", "<cmd>lua require'hop'.hint_lines()<cr>")
 
 
 -- telescope maps
 
 map("n", "<leader><space>", "<cmd>lua require('telescope.builtin').find_files()<cr>")
-map('n', '<leader>.', '<cmd>Telescope file_browser<CR>')
-map('n','<leader>,','<cmd>Telescope buffers show_all_buffers=true<CR>')
+map('n', '<leader>,', '<cmd>Telescope buffers show_all_buffers=true<CR>')
 map('n', '<leader>/', '<cmd>Telescope live_grep<CR>', opts)
 map('n', '<leader>:', '<cmd>Telescope command_history<CR>', opts)
-
 
 map('n', '<leader>sg', '<cmd>Telescope live_grep<CR>', opts)
 map('n', '<leader>sb', '<cmd>Telescope current_buffer_fuzzy_find<CR>', opts)
 map('n', '<leader>ss', '<cmd>Telescope lsp_document_symbols<CR>', opts)
 map('n', '<leader>sh', '<cmd>Telescope command_history<CR>', opts)
 map('n', '<leader>sm', '<cmd>Telescope marks<CR>', opts)
+
 -- open things
 map('n', '<leader>oe', '<cmd>NvimTreeToggle<CR>')
 -- create file
@@ -36,13 +34,12 @@ map('n', '<leader>oe', '<cmd>NvimTreeToggle<CR>')
 
 
 local opts = { silent = true }
--- TAB to cycle buffers too, why not?
--- map('n', '<Tab>', ':bnext<CR>', opts)
--- map('n', '<S-Tab>', ':bprevious<CR>', opts)
 
 -- ESC to turn off search highlighting
 map('n', '<esc>', ':noh<CR>', opts)
+-- Exit insert mode faster with jk
 map('i', 'jk', '<ESC>', opts)
+
 ---[[-----------------]]---
 --    Resizing Splits    --
 ---]]-----------------[[---
@@ -85,19 +82,5 @@ map('n', '<C-k>', '<C-w>k')
 map('n', '<C-l>', '<C-w>l')
 map('n', '<C-w>', '<C-w>w')
 
--- vim.api.nvim_set_keymap("i", "<CR>", "compe#confirm({ 'keys': '<CR>', 'select': v:true })", { expr = true })
--- vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", { expr = true })
--- vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", { expr = true })
--- vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", { expr = true })
--- vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", { expr = true })
--- toggle set_terminal
 
 map('n', '<leader>ot', '<cmd>ToggleTerm<CR>', opts)
-map('n', '<leader>o1t', '<cmd>ToggleTerm 1<CR>', opts)
-map('n', '<leader>o2t', '<cmd>ToggleTerm 2<CR>', opts)
-map('n', '<leader>o3t', '<cmd>ToggleTerm 3<CR>', opts)
-
-
--- __NEOGIT
-
-map('n', '<leader>g', '<cmd>Neogit<CR>', opts)
