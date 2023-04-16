@@ -7,6 +7,7 @@ local function map(mode, lhs, rhs, opts)
 end
 
 map("n", "s", "<cmd>lua require'hop'.hint_words()<cr>")
+map("n", "<leader>s", "<cmd>HopChar2<cr>")
 -- map("n", "<leader>h", "<cmd>lua require'hop'.hint_words()<cr>")
 map("n", "<leader>p", "<cmd>SearchSession<cr>")
 -- map("n", "<leader>l", "<cmd>lua require'hop'.hint_lines()<cr>")

@@ -2,7 +2,6 @@ require "paq" {
 	"savq/paq-nvim"; -- Let Paq manage itself
 	-- lsp autocomplete
 	"neovim/nvim-lspconfig"; -- Mind the semi-colons
-	-- move to mason when i have time
 	"williamboman/mason.nvim";
 	"williamboman/mason-lspconfig.nvim";
 	'hrsh7th/cmp-nvim-lsp';
@@ -40,14 +39,6 @@ require "paq" {
 	"rmagatti/session-lens";
 	-- comments
 	"tpope/vim-commentary",
-	-- git
-	-- "TimUntersberger/neogit",
-	-- beorg - ord mode
-	-- "nvim-neorg/neorg"
-	-- "kristijanhusak/orgmode.nvim",
-	-- "akinsho/org-bullets.nvim",
-	-- "lukas-reineke/headlines.nvim",
-	-- "folke/tokyonight.nvim"
 	-- copilot
 	"zbirenbaum/copilot.lua"
 }
