@@ -3,6 +3,7 @@ require('settings') -- lua/settings.lua
 require('plugins')
 require('maps') -- lua/maps.lua
 require('lsp')
+require('copilot')
 
 --- inspired by https://gist.github.com/benfrain/97f2b91087121b2d4ba0dcc4202d252f
 -- to check out
