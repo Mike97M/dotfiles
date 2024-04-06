@@ -61,14 +61,14 @@ local on_attach = function(client, bufnr)
 	-- 	buf_set_keymap("n", "<space>ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
 	-- end
 	-- format on save
-	local augroup = vim.api.nvim_create_augroup("LspFormatting", { clear = true })
-	vim.api.nvim_create_autocmd("BufWritePre", {
-		group = augroup,
-		buffer = bufnr,
-		callback = function()
-			vim.lsp.buf.formatting()
-		end,
-	})
+	-- local augroup = vim.api.nvim_create_augroup("LspFormatting", { clear = true })
+	-- vim.api.nvim_create_autocmd("BufWritePre", {
+	-- 	group = augroup,
+	-- 	buffer = bufnr,
+	-- 	callback = function()
+	-- 		vim.lsp.buf.format()
+	-- 	end,
+	-- })
 end
 
 -- nvim_lsp.pylsp.setup({on_attach = on_attach})
@@ -131,13 +131,6 @@ cmp.setup.cmdline(':', {
 -- local lsp_installer = require "mason"
 
 -- require("mason").setup()
-require("mason").setup {
-	ui = {
-		icons = {
-			package_installed = "✓"
-		}
-	}
-}
 -- Include the servers you want to have installed by default below
 local servers = {
 	"bashls",
@@ -149,8 +142,22 @@ local servers = {
 	"gopls",
 	"lua_ls",
 	"html",
+
+	-- "black",
+	-- "debugpy",
+	-- "mypy",
+	-- "ruff",
+	"pyright",
 }
 
+require("mason").setup {
+	ui = {
+		icons = {
+			package_installed = "✓"
+		}
+	},
+	-- ensure_installed = servers,
+}
 require("mason-lspconfig").setup {
 	ensure_installed = servers,
 }
@@ -237,14 +244,14 @@ end,
 })
 
 
-require 'lspconfig'.ruff_lsp.setup {
-	init_options = {
-		settings = {
-			-- Any extra CLI arguments for `ruff` go here.
-			args = {},
-		}
-	}
-}
+-- require 'lspconfig'.ruff_lsp.setup {
+-- 	init_options = {
+-- 		settings = {
+-- 			-- Any extra CLI arguments for `ruff` go here.
+-- 			args = {},
+-- 		}
+-- 	}
+-- }
 -- require'lspconfig'.pyright.setup{ on_attach = on_attach}
 -- nvim_lsp = require "lspconfig"
 -- nvim_lsp.pyright.setup {
@@ -266,3 +273,37 @@ require 'lspconfig'.ruff_lsp.setup {
 -- 		},
 -- 	},
 -- }
+--
+--
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+local null_ls = require('null-ls')
+
+local null_ls_opts = {
+  sources = {
+    null_ls.builtins.formatting.black,
+    null_ls.builtins.diagnostics.mypy,
+    null_ls.builtins.diagnostics.ruff,
+  },
+  on_attach = function(client, bufnr)
+    if client.supports_method("textDocument/formatting") then
+      vim.api.nvim_clear_autocmds({
+        group = augroup,
+        buffer = bufnr,
+      })
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        group = augroup,
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({ bufnr = bufnr })
+        end,
+      })
+    end
+  end,
+}
+null_ls.setup(null_ls_opts)
+
+nvim_lsp.pyright.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = {"python"},
+})
