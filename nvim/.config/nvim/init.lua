@@ -3,7 +3,7 @@ require('settings') -- lua/settings.lua
 require('plugins')
 require('maps') -- lua/maps.lua
 require('lsp')
-require('copilot')
+-- require('copilot_setup')
 
 --- inspired by https://gist.github.com/benfrain/97f2b91087121b2d4ba0dcc4202d252f
 -- to check out
@@ -93,56 +93,42 @@ vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 -- following options are the default
 -- each of these are documented in `:help nvim-tree.OPTION_NAME`
 require 'nvim-tree'.setup {
-	disable_netrw       = true,
-	hijack_netrw        = true,
-	open_on_setup       = false,
-	ignore_ft_on_setup  = {},
-	open_on_tab         = false,
-	hijack_cursor       = false,
-	update_cwd          = false,
-	diagnostics         = {
-		enable = false,
-		icons = {
-			hint = "",
-			info = "",
-			warning = "",
-			error = "",
-		}
-	},
-	update_focused_file = {
-		enable      = false,
-		update_cwd  = false,
-		ignore_list = {}
-	},
-	system_open         = {
-		cmd  = nil,
-		args = {}
-	},
-	filters             = {
-		dotfiles = false,
-		custom = {}
-	},
-	view                = {
-		width = 30,
-		hide_root_folder = false,
-		side = 'left',
-		mappings = {
-			custom_only = false,
-			list = {}
-		}
-	}
+	-- disable_netrw       = true,
+	-- hijack_netrw        = true,
+	-- open_on_tab         = false,
+	-- hijack_cursor       = false,
+	-- update_cwd          = false,
+	-- diagnostics         = {
+	-- 	enable = false,
+	-- 	icons = {
+	-- 		hint = "",
+	-- 		info = "",
+	-- 		warning = "",
+	-- 		error = "",
+	-- 	}
+	-- },
+	-- update_focused_file = {
+	-- 	enable      = false,
+	-- 	update_cwd  = false,
+	-- 	ignore_list = {}
+	-- },
+	-- system_open         = {
+	-- 	cmd  = nil,
+	-- 	args = {}
+	-- },
+	-- filters             = {
+	-- 	dotfiles = false,
+	-- 	custom = {}
+	-- },
+	-- view                = {
+	-- 	width = 30,
+	-- 	hide_root_folder = false,
+	-- 	side = 'left',
+	-- }
 }
 
 
 require("plenary")
-local neogit = require('neogit')
-
-neogit.setup {
-	disable_commit_confirmation = true,
-	integrations = {
-		diffview = true
-	}
-}
 
 -- org mode
 -- local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
@@ -207,8 +193,3 @@ require('nvim-treesitter.configs').setup {
 	-- incremental_selection = { enable = true },
 	textobjects = { enable = true },
 }
--- require('neorg').setup {
--- load = {
---        ["core.defaults"] = {}
---    }
--- }

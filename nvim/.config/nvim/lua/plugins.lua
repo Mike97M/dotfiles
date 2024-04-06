@@ -4,6 +4,7 @@ require "paq" {
 	"neovim/nvim-lspconfig"; -- Mind the semi-colons
 	"williamboman/mason.nvim";
 	"williamboman/mason-lspconfig.nvim";
+	"jose-elias-alvarez/null-ls.nvim";
 	'hrsh7th/cmp-nvim-lsp';
 	'hrsh7th/cmp-nvim-lua';
 	'hrsh7th/cmp-buffer';
@@ -40,7 +41,7 @@ require "paq" {
 	-- comments
 	"tpope/vim-commentary",
 	-- copilot
-	"zbirenbaum/copilot.lua"
+	-- "zbirenbaum/copilot.lua"
 }
 require('onedark').load()
 
