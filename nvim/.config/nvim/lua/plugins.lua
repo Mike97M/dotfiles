@@ -34,7 +34,7 @@ require "paq" {
 	-- which key
 	"folke/which-key.nvim";
 	-- terminal
-	"akinsho/nvim-toggleterm.lua";
+	-- "akinsho/nvim-toggleterm.lua";
 	-- auto-session
 	"rmagatti/auto-session";
 	"rmagatti/session-lens";
