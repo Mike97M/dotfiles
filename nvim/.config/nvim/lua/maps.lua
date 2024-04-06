@@ -84,4 +84,4 @@ map('n', '<C-l>', '<C-w>l')
 map('n', '<C-w>', '<C-w>w')
 
 
-map('n', '<leader>ot', '<cmd>ToggleTerm<CR>', opts)
+-- map('n', '<leader>ot', '<cmd>ToggleTerm<CR>', opts)
