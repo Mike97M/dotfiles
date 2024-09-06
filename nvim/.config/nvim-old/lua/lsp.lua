@@ -103,8 +103,47 @@ cmp.setup({
 		}),
 		['<CR>'] = cmp.mapping.confirm({ select = true }),
 	},
+	formatting = {
+        format = require('lspkind').cmp_format({
+            mode = "symbol",
+            maxwidth = 50,
+            ellipsis_char = '...',
+			show_labelDetails = true,
+            -- symbol_map = { Codeium = "", }
+			--
+			symbol_map = {
+				Codeium = "",
+				Text = "a",
+				Method = "󰆧",
+				Function = "󰊕",
+				Constructor = "",
+				Field = "󰜢",
+				Variable = "󰀫",
+				Class = "󰠱",
+				Interface = "",
+				Module = "",
+				Property = "󰜢",
+				Unit = "󰑭",
+				Value = "󰎠",
+				Enum = "",
+				Keyword = "󰌋",
+				Snippet = "",
+				Color = "󰏘",
+				File = "󰈙",
+				Reference = "󰈇",
+				Folder = "󰉋",
+				EnumMember = "",
+				Constant = "󰏿",
+				Struct = "󰙅",
+				Event = "",
+				Operator = "󰆕",
+				TypeParameter = "",
+			},
+        })
+    },
 
 	sources = cmp.config.sources({
+		{ name = "codeium" },
 		{ name = 'nvim_lua' },
 		{ name = 'nvim_lsp' },
 		{ name = 'vsnip' },
@@ -113,6 +152,7 @@ cmp.setup({
 	})
 })
 
+-- cmp.setup.cmdline.nvim_lsp
 -- Use buffer source for `/`.
 cmp.setup.cmdline('/', {
 	sources = {
@@ -146,7 +186,7 @@ local servers = {
 	-- "black",
 	-- "debugpy",
 	-- "mypy",
-	-- "ruff",
+	"ruff",
 	"pyright",
 }
 
@@ -307,3 +347,7 @@ nvim_lsp.pyright.setup({
   capabilities = capabilities,
   filetypes = {"python"},
 })
+
+local codeium = require("codeium").setup({
+
+	})

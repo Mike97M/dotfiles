@@ -1,195 +1,109 @@
--- TODO Configure auto-session and terminal
-require('settings') -- lua/settings.lua
-require('plugins')
-require('maps') -- lua/maps.lua
-require('lsp')
--- require('copilot_setup')
+--[[
 
---- inspired by https://gist.github.com/benfrain/97f2b91087121b2d4ba0dcc4202d252f
--- to check out
--- https://icyphox.sh/blog/nvim-lua/
--- https://github.com/rockerBOO/awesome-neovim
--- https://github.com/ggandor/lightspeed.nvim
--- https://oroques.dev/notes/neovim-init/
--- https://github.com/kyazdani42/nvim-tree.lua
--- https://github.com/NTBBloodbath/doom-nvim
---
--- https://blog.inkdrop.app/how-to-set-up-neovim-0-5-modern-plugins-lsp-treesitter-etc-542c3d9c9887
+=====================================================================
+==================== READ THIS BEFORE CONTINUING ====================
+=====================================================================
+========                                    .-----.          ========
+========         .----------------------.   | === |          ========
+========         |.-""""""""""""""""""-.|   |-----|          ========
+========         ||                    ||   | === |          ========
+========         ||   KICKSTART.NVIM   ||   |-----|          ========
+========         ||                    ||   | === |          ========
+========         ||                    ||   |-----|          ========
+========         ||:Tutor              ||   |:::::|          ========
+========         |'-..................-'|   |____o|          ========
+========         `"")----------------(""`   ___________      ========
+========        /::::::::::|  |::::::::::\  \ no mouse \     ========
+========       /:::========|  |==hjkl==:::\  \ required \    ========
+========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
+========                                                     ========
+=====================================================================
+=====================================================================
 
+What is Kickstart?
 
-require("which-key").setup {}
+  Kickstart.nvim is *not* a distribution.
 
-require('lualine').setup {
-	options = {
-		theme = 'onedark'
-	}
-}
+  Kickstart.nvim is a starting point for your own configuration.
+    The goal is that you can read every line of code, top-to-bottom, understand
+    what your configuration is doing, and modify it to suit your needs.
 
+    Once you've done that, you can start exploring, configuring and tinkering to
+    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
+    or immediately breaking it into modular pieces. It's up to you!
 
--- local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+    If you don't know anything about Lua, I recommend taking some time to read through
+    a guide. One possible example which will only take 10-15 minutes:
+      - https://learnxinyminutes.com/docs/lua/
 
--- parser_configs.norg = {
--- 	install_info = {
--- 		url = "https://github.com/nvim-neorg/tree-sitter-norg",
--- 		files = { "src/parser.c", "src/scanner.cc" },
--- 		branch = "main"
--- 	},
--- }
+    After understanding a bit more about Lua, you can use `:help lua-guide` as a
+    reference for how Neovim integrates Lua.
+    - :help lua-guide
+    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
 
--- local ts = require("nvim-treesitter.configs")
--- ts.setup({ ensure_installed = "maintained", highlight = { enable = true } })
+Kickstart Guide:
 
-require 'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
---vim.api.nvim_set_keymap('n', '$', "<cmd>lua require'hop'.hint_words()<cr>", {})
+  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
 
-local opts = {
-	log_level = 'info',
-	auto_session_enable_last_session = false,
-	auto_session_root_dir = vim.fn.stdpath('data') .. "/sessions/",
-	auto_session_enabled = true,
-	auto_save_enabled = true,
-	auto_restore_enabled = true,
-	auto_session_suppress_dirs = nil
-}
+    If you don't know what this means, type the following:
+      - <escape key>
+      - :
+      - Tutor
+      - <enter key>
 
-require('auto-session').setup(opts)
-require('session-lens').setup {
-	path_display = { 'shorten' },
-}
--- require 'toggleterm'.setup {
--- 	size = function(term)
--- 		if term.direction == "horizontal" then
--- 			return 15
--- 		elseif term.direction == "vertical" then
--- 			return vim.o.columns * 0.4
--- 		end
--- 	end,
--- 	open_mapping = [[<c-\>]],
--- 	hide_numbers = true, -- hide the number column in toggleterm buffers
--- 	shade_filetypes = {},
--- 	shade_terminals = true,
--- 	shading_factor = '1', -- the degree by which to darken to terminal colour, default: 1 for dark backgrounds, 3 for light
--- 	start_in_insert = true,
--- 	insert_mappings = true, -- whether or not the open mapping applies in insert mode
--- 	persist_size = true,
--- 	direction = 'horizontal',
--- 	close_on_exit = true, -- close the terminal window when the process exits
--- 	shell = vim.o.shell, -- change the default shell
--- }
--- function _G.set_terminal_keymaps()
--- 	local opts = { noremap = true }
--- 	vim.api.nvim_buf_set_keymap(0, 't', '<esc>', [[<C-\><C-n>]], opts)
--- 	vim.api.nvim_buf_set_keymap(0, 't', 'jk', [[<C-\><C-n>]], opts)
--- 	vim.api.nvim_buf_set_keymap(0, 't', '<C-h>', [[<C-\><C-n><C-W>h]], opts)
--- 	vim.api.nvim_buf_set_keymap(0, 't', '<C-j>', [[<C-\><C-n><C-W>j]], opts)
--- 	vim.api.nvim_buf_set_keymap(0, 't', '<C-k>', [[<C-\><C-n><C-W>k]], opts)
--- 	vim.api.nvim_buf_set_keymap(0, 't', '<C-l>', [[<C-\><C-n><C-W>l]], opts)
--- end
+    (If you already know the Neovim basics, you can skip this step.)
 
--- if you only want these mappings for toggle term use term://*toggleterm#* instead
--- vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+  Once you've completed that, you can continue working through **AND READING** the rest
+  of the kickstart init.lua.
 
+  Next, run AND READ `:help`.
+    This will open up a help window with some basic information
+    about reading, navigating and searching the builtin help documentation.
 
--- following options are the default
--- each of these are documented in `:help nvim-tree.OPTION_NAME`
-require 'nvim-tree'.setup {
-	-- disable_netrw       = true,
-	-- hijack_netrw        = true,
-	-- open_on_tab         = false,
-	-- hijack_cursor       = false,
-	-- update_cwd          = false,
-	-- diagnostics         = {
-	-- 	enable = false,
-	-- 	icons = {
-	-- 		hint = "",
-	-- 		info = "",
-	-- 		warning = "",
-	-- 		error = "",
-	-- 	}
-	-- },
-	-- update_focused_file = {
-	-- 	enable      = false,
-	-- 	update_cwd  = false,
-	-- 	ignore_list = {}
-	-- },
-	-- system_open         = {
-	-- 	cmd  = nil,
-	-- 	args = {}
-	-- },
-	-- filters             = {
-	-- 	dotfiles = false,
-	-- 	custom = {}
-	-- },
-	-- view                = {
-	-- 	width = 30,
-	-- 	hide_root_folder = false,
-	-- 	side = 'left',
-	-- }
-}
+    This should be the first place you go to look when you're stuck or confused
+    with something. It's one of my favorite Neovim features.
 
+    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
+    which is very useful when you're not exactly sure of what you're looking for.
 
-require("plenary")
+  I have left several `:help X` comments throughout the init.lua
+    These are hints about where to find more information about the relevant settings,
+    plugins or Neovim features used in Kickstart.
 
--- org mode
--- local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
--- parser_config.org = {
---   install_info = {
---     url = 'https://github.com/milisims/tree-sitter-org',
---     revision = 'main',
---     files = {'src/parser.c', 'src/scanner.cc'},
---   },
---   filetype = 'org',
--- }
+   NOTE: Look for lines like this
 
--- require'nvim-treesitter.configs'.setup {
---   -- If TS highlights are not enabled at all, or disabled via `disable` prop, highlighting will fallback to default Vim syntax highlighting
---   highlight = {
---     enable = true,
---     -- disable = {'org'}, -- Remove this to use TS highlighter for some of the highlights (Experimental)
---     additional_vim_regex_highlighting = {'org'}, -- Required since TS highlighter doesn't support all syntax features (conceal)
---   },
---   ensure_installed = {'org'}, -- Or run :TSUpdate org
--- }
+    Throughout the file. These are for you, the reader, to help you understand what is happening.
+    Feel free to delete them once you know what you're doing, but they should serve as a guide
+    for when you are first encountering a few different constructs in your Neovim config.
 
--- -- require('orgmode').setup({
--- require('orgmode').setup_ts_grammar({
--- org_agenda_files = {'~/Dropbox/org/*', '~/my-orgs/**/*'},
--- org_default_notes_file = '~/Dropbox/org/refile.org',
--- })
+If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
 
+I hope you enjoy your Neovim journey,
+- TJ
 
--- require("org-bullets").setup {
--- 	symbols = { "◉", "○", "✸", "✿" }
--- }
--- require("headlines").setup()
--- org mode end
+P.S. You can delete this when you're done too. It's your config now! :)
+--]]
 
--- local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+-- Set <space> as the leader key
+-- See `:help mapleader`
+--  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
--- -- These two are optional and provide syntax highlighting
--- -- for Neorg tables and the @document.meta tag
--- parser_configs.norg_meta = {
---     install_info = {
---         url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
---         files = { "src/parser.c" },
---         branch = "main"
---     },
--- }
+-- Set to true if you have a Nerd Font installed and selected in the terminal
+vim.g.have_nerd_font = true
 
--- parser_configs.norg_table = {
---     install_info = {
---         url = "https://github.com/nvim-neorg/tree-sitter-norg-table",
---         files = { "src/parser.c" },
---         branch = "main"
---     },
--- }
-require('nvim-treesitter.configs').setup {
-	ensure_installed = { "html", "python", "lua", "javascript", "markdown", "go" },
-	highlight = {
-		enable = true,
-		use_languagetree = true
-	},
-	indent = { enable = true },
-	-- incremental_selection = { enable = true },
-	textobjects = { enable = true },
-}
+-- [[ Setting options ]]
+require 'options'
+
+-- [[ Basic Keymaps ]]
+require 'keymaps'
+
+-- [[ Install `lazy.nvim` plugin manager ]]
+require 'lazy-bootstrap'
+
+-- [[ Configure and install plugins ]]
+require 'lazy-plugins'
+
+-- The line beneath this is called `modeline`. See `:help modeline`
+-- vim: ts=2 sts=2 sw=2 et
