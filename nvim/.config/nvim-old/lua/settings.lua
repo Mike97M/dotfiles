@@ -5,6 +5,7 @@ local opt = vim.opt
 
 -- global options
 vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 o.swapfile = true
 o.dir = '/tmp'
 o.smartcase = true
@@ -18,6 +19,7 @@ o.hidden = true
 o.shiftwidth = 4
 o.tabstop = 4
 
+vim.o.sessionoptions="blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 -- ... snip ...
 
 -- window-local options

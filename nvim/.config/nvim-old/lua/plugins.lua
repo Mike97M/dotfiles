@@ -42,7 +42,14 @@ require "paq" {
 	"tpope/vim-commentary",
 	-- copilot
 	-- "zbirenbaum/copilot.lua"
+	-- ai
+	"Exafunction/codeium.nvim",
+	-- icons
+	"onsails/lspkind.nvim",
+	"echasnovski/mini.icons"
 }
 require('onedark').load()
 
 -- vim.cmd[[colorscheme tokyonight]]
+--
+require('mini.icons').setup()
