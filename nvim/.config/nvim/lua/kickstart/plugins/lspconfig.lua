@@ -179,6 +179,47 @@ return {
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
         --
+        bashls = {},
+
+        pyright = {
+          python = {
+            analysis = {
+              useLibraryCodeForTypes = true,
+              diagnosticSeverityOverrides = {
+                reportGeneralTypeIssues = 'none',
+                reportOptionalMemberAccess = 'none',
+                reportOptionalSubscript = 'none',
+                reportPrivateImportUsage = 'none',
+              },
+              autoImportCompletions = true,
+            },
+            linting = { pylintEnabled = false },
+          },
+        },
+        pylsp = {
+          pylsp = {
+            builtin = {
+              installExtraArgs = { 'flake8', 'pycodestyle', 'pydocstyle', 'pyflakes', 'pylint', 'yapf', 'ruff' },
+            },
+            plugins = {
+              jedi_completion = { enabled = false },
+              rope_completion = { enabled = false },
+              flake8 = { enabled = false },
+              pyflakes = { enabled = false },
+              pylint = { enabled = true },
+              ruff = { enabled = true },
+              pycodestyle = {
+                ignore = { 'E226', 'E266', 'E302', 'E303', 'E304', 'E305', 'E402', 'C0103', 'W0104', 'W0621', 'W391', 'W503', 'W504' },
+                maxLineLength = 99,
+              },
+            },
+          },
+        },
+        volar = {},
+        yamlls = {},
+        gopls = {},
+        html = {},
+        ruff = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -202,7 +243,7 @@ return {
       --    :Mason
       --
       --  You can press `g?` for help in this menu.
-      require('mason').setup()
+      -- require('mason').setup()
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
@@ -210,7 +251,7 @@ return {
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
       })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      -- require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
         handlers = {
