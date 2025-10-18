@@ -17,10 +17,8 @@ return {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
     dependencies = {
-      -- Automatically install LSPs and related tools to stdpath for Neovim
-      { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
+      'williamboman/mason.nvim',
       'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -150,6 +148,9 @@ return {
         end,
       })
 
+      -- Setup mason first before configuring servers
+      require('mason').setup()
+
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -181,36 +182,25 @@ return {
         --
         bashls = {},
 
-        pyright = {
-          python = {
-            analysis = {
-              useLibraryCodeForTypes = true,
-              diagnosticSeverityOverrides = {
-                reportGeneralTypeIssues = 'none',
-                reportOptionalMemberAccess = 'none',
-                reportOptionalSubscript = 'none',
-                reportPrivateImportUsage = 'none',
-              },
-              autoImportCompletions = true,
-            },
-            linting = { pylintEnabled = false },
-          },
+        ruff = {
+          cmd = { "ruff", "server" },
         },
-        pylsp = {
-          pylsp = {
-            builtin = {
-              installExtraArgs = { 'flake8', 'pycodestyle', 'pydocstyle', 'pyflakes', 'pylint', 'yapf', 'ruff' },
-            },
-            plugins = {
-              jedi_completion = { enabled = false },
-              rope_completion = { enabled = false },
-              flake8 = { enabled = false },
-              pyflakes = { enabled = false },
-              pylint = { enabled = true },
-              ruff = { enabled = true },
-              pycodestyle = {
-                ignore = { 'E226', 'E266', 'E302', 'E303', 'E304', 'E305', 'E402', 'C0103', 'W0104', 'W0621', 'W391', 'W503', 'W504' },
-                maxLineLength = 99,
+
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                useLibraryCodeForTypes = true,
+                typeCheckingMode = 'basic',
+                diagnosticSeverityOverrides = {
+                  reportGeneralTypeIssues = 'none',
+                  reportOptionalMemberAccess = 'none',
+                  reportOptionalSubscript = 'none',
+                  reportPrivateImportUsage = 'none',
+                },
+                autoImportCompletions = true,
+                autoSearchPaths = true,
+                diagnosticMode = 'workspace',
               },
             },
           },
@@ -219,7 +209,6 @@ return {
         yamlls = {},
         gopls = {},
         html = {},
-        ruff = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -237,34 +226,18 @@ return {
         },
       }
 
-      -- Ensure the servers and tools above are installed
-      --  To check the current status of installed tools and/or manually install
-      --  other tools, you can run
-      --    :Mason
-      --
-      --  You can press `g?` for help in this menu.
-      -- require('mason').setup()
-
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+      -- Setup mason-lspconfig to automatically install and configure servers
+      require('mason-lspconfig').setup({
+        ensure_installed = vim.tbl_keys(servers),
+        automatic_installation = true,
       })
-      -- require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      -- Setup handlers for LSP servers
+      for server_name, server_config in pairs(servers) do
+        local config = server_config or {}
+        config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
+        require('lspconfig')[server_name].setup(config)
+      end
     end,
   },
 }
