@@ -112,7 +112,6 @@ return {
             group_index = 0,
           },
           -- { name = "copilot", group_index = 2 },
-          { name = 'copilot' },
           { name = 'codeium' },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
