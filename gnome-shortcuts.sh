@@ -59,6 +59,26 @@ echo "    - CapsLock is now Ctrl."
 echo "    - Shift+Shift now toggles CapsLock."
 
 echo ""
+echo ">>> Step 5: Configuring Window Management Shortcuts..."
+
+# Win+f -> Toggle Maximize (instead of Fullscreen)
+gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>f']"
+echo "    - <Super>f set to Toggle Maximize."
+# Win+q -> Close Window
+gsettings set org.gnome.desktop.wm.keybindings close "['<Super>q']"
+echo "    - <Super>q set to Close Window."
+
+# Win+w -> Switch windows of the same application (Switch Group)
+gsettings set org.gnome.desktop.wm.keybindings switch-group "['<Super>w']"
+echo "    - <Super>w set to Switch Windows of Same App."
+
+# Win+Tab -> Switch windows (Restricted to Current Workspace)
+# 1. Force the window switcher to ignore windows on other workspaces
+gsettings set org.gnome.shell.window-switcher current-workspace-only true
+# 2. Bind <Super>Tab to 'switch-windows' (instead of the default 'switch-applications')
+gsettings set org.gnome.desktop.wm.keybindings switch-windows "['<Super>Tab']"
+echo "    - <Super>Tab set to Switch Windows (Current Workspace Only)."
+echo ""
 echo "------------------------------------------------------------------"
 echo "Done. If keys still don't work immediately, log out and back in."
 echo "------------------------------------------------------------------"
