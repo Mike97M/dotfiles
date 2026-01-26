@@ -1,25 +1,64 @@
+#!/bin/bash
 
-# https://askubuntu.com/questions/332264/13-04-more-than-four-workspace-shortcuts-in-gnome-flashback-no-effects
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-1 "['<Super>1']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-2 "['<Super>2']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-3 "['<Super>3']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-4 "['<Super>4']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-5 "['<Super>5']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-6 "['<Super>6']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-7 "['<Super>7']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-8 "['<Super>8']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-9 "['<Super>9']"
-dconf write /org/gnome/desktop/wm/keybindings/switch-to-workspace-10 "['<Super>0']"
+# ==========================================
+# GNOME Configuration Script (Fixes Conflicts)
+# ==========================================
 
-# switch windows
+echo "------------------------------------------------------------------"
+echo "This script will:"
+echo "1. REMOVE conflicts: Unbind <Super>1-9 from 'Launch App'."
+echo "2. Disable Dynamic Workspaces & Set count to 10."
+echo "3. Map <Super>1-0 to Switch Workspaces."
+echo "4. Map <Shift><Super>1-0 to Move Windows."
+echo "5. Remap Caps->Ctrl and Shift+Shift->CapsToggle."
+echo "------------------------------------------------------------------"
 
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-1 "['<Shift><Super>1']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-2 "['<Shift><Super>2']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-3 "['<Shift><Super>3']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-4 "['<Shift><Super>4']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-5 "['<Shift><Super>5']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-6 "['<Shift><Super>6']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-7 "['<Shift><Super>7']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-8 "['<Shift><Super>8']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-9 "['<Shift><Super>9']"
-dconf write /org/gnome/desktop/wm/keybindings/move-to-workspace-10 "['<Shift><Super>0']"
+read -p "Do you want to proceed? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Operation cancelled."
+    exit 1
+fi
+
+echo ""
+echo ">>> Step 1: Removing Conflicting Shortcuts..."
+# This is the critical fix. We must clear the default 'Launch App' shortcuts
+# so they don't block our workspace shortcuts.
+for i in {1..9}; do
+    gsettings set org.gnome.shell.keybindings switch-to-application-$i "[]"
+done
+echo "    - Unbound <Super>1 through <Super>9 from Dock applications."
+
+echo ""
+echo ">>> Step 2: Configuring Workspace Behavior..."
+# Ensure static workspaces are on
+gsettings set org.gnome.mutter dynamic-workspaces false
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 10
+echo "    - Workspaces set to Static (10 total)."
+
+echo ""
+echo ">>> Step 3: Applying Workspace Shortcuts..."
+
+# Loop for 1-9
+for i in {1..9}; do
+    # Switch to workspace
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-$i "['<Super>$i']"
+    # Move window to workspace
+    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-$i "['<Shift><Super>$i']"
+done
+
+# Handle Workspace 10 (Key 0)
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-10 "['<Super>0']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-10 "['<Shift><Super>0']"
+echo "    - Workspace shortcuts applied (1-10)."
+
+echo ""
+echo ">>> Step 4: Remapping Keyboard Modifiers..."
+gsettings set org.gnome.desktop.input-sources xkb-options "['ctrl:nocaps', 'shift:both_capslock']"
+echo "    - CapsLock is now Ctrl."
+echo "    - Shift+Shift now toggles CapsLock."
+
+echo ""
+echo "------------------------------------------------------------------"
+echo "Done. If keys still don't work immediately, log out and back in."
+echo "------------------------------------------------------------------"
