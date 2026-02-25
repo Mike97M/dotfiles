@@ -63,4 +63,6 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 vim.opt.colorcolumn = '80'
+
+vim.opt.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
 -- vim: ts=2 sts=2 sw=2 et

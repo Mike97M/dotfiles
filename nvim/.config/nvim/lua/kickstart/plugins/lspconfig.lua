@@ -22,7 +22,16 @@ return {
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'j-hui/fidget.nvim',
+        opts = {
+          notification = {
+            window = {
+              avoid = { 'NvimTree' },
+            },
+          },
+        },
+      },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -236,7 +245,8 @@ return {
       for server_name, server_config in pairs(servers) do
         local config = server_config or {}
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
-        require('lspconfig')[server_name].setup(config)
+        vim.lsp.config(server_name, config)
+        vim.lsp.enable(server_name)
       end
     end,
   },
