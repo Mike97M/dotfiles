@@ -1,0 +1,299 @@
+# Lima VM spec for running Claude Code on openSUSE Tumbleweed (rolling release)
+#
+# Usage:
+#   # start with only ~/.claude shared (the default — see the Mounts section).
+#   # The host ~/.claude folder is always shared into the VM so Claude Code
+#   # history, settings, memory, agents, and projects survive image rebuilds.
+#   # No *project* folders are shared unless you add them explicitly.
+#   limactl start --name=claude-code ~/lima-specs/claude-code.yaml
+#
+#   # start and share ONE specific host folder read-write into the VM
+#   limactl start --name=claude-code \
+#     --mount="/home/mike/Developement/deploy-toolkit:w" \
+#     ~/lima-specs/claude-code.yaml
+#
+#   # share multiple folders — repeat the flag
+#   limactl start --name=claude-code \
+#     --mount="/home/mike/Developement/repo-a:w" \
+#     --mount="/home/mike/Developement/repo-b:w" \
+#     ~/lima-specs/claude-code.yaml
+#
+#   # read-only mount: drop the ":w"
+#   limactl start --mount="/home/mike/notes" ~/lima-specs/claude-code.yaml
+#
+#   limactl shell claude-code
+#   claude            # inside the VM
+#
+# To stop / remove:
+#   limactl stop claude-code
+#   limactl delete claude-code
+#
+# Tumbleweed is a rolling release, so the Cloud image URL is stable but the
+# contents shift. Run `limactl prune` if you want to force a fresh image pull.
+
+# --- VM image ----------------------------------------------------------------
+images:
+  - location: "https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-Cloud.qcow2"
+    arch: "x86_64"
+  # NOTE: openSUSE does not publish a standard Tumbleweed Minimal-VM for
+  # aarch64 (only MicroOS variants). If you are on arm64 hardware, either
+  # switch to the MicroOS image below or fall back to Leap 16.
+  # - location: "https://download.opensuse.org/ports/aarch64/tumbleweed/appliances/openSUSE-MicroOS.aarch64-OpenStack-Cloud.qcow2"
+  #   arch: "aarch64"
+
+# --- UEFI firmware -----------------------------------------------------------
+# Lima mounts a single readonly pflash. openSUSE's "-code.bin" is a
+# code-only image that needs a paired vars file, which Lima doesn't
+# provide — the VM hangs in UEFI init. The "-4m.bin" (combined code+vars,
+# 4 MiB) boots correctly as a single standalone pflash.
+# Delete this block on hosts where Lima's default discovery already works.
+firmware:
+  legacyBIOS: false
+  images:
+    - location: "/usr/share/qemu/ovmf-x86_64-4m.bin"
+      arch: "x86_64"
+      vmType: "qemu"
+
+# --- Resources (Medium tier) -------------------------------------------------
+cpus: 4
+memory: "8GiB"
+disk: "60GiB"
+
+# --- Mounts ------------------------------------------------------------------
+# The host ~/.claude is shared into the VM (writable) so Claude Code history,
+# settings, memory, agents, and projects persist across VM rebuilds — delete
+# and recreate the VM without losing any of that. The provisioning step below
+# selectively symlinks only those items; auth, cache, and sessions stay
+# VM-local to avoid oauth conflicts between host and VM. Project folders are
+# shared separately via cc-mount (none are shared by default).
+mounts:
+  - location: "~/.claude"
+    writable: true
+mountType: "virtiofs"
+
+# --- SSH ---------------------------------------------------------------------
+# Agent forwarding intentionally disabled — keep host SSH keys on the host.
+ssh:
+  loadDotSSHPubKeys: false
+  forwardAgent: false
+
+# --- Environment -------------------------------------------------------------
+# Propagate host proxy vars automatically (useful behind corp proxies).
+propagateProxyEnv: true
+
+env:
+  # Tell Claude Code to use the system ripgrep instead of the bundled one
+  # (better on non-glibc distros; harmless on openSUSE which is glibc-based).
+  USE_BUILTIN_RIPGREP: "0"
+
+# --- Provisioning: install everything Claude Code needs ----------------------
+provision:
+  # --- System packages via zypper ------------------------------------------
+  - mode: system
+    script: |
+      #!/usr/bin/env bash
+      set -eux -o pipefail
+
+      # Refresh repos (the minimal cloud image ships with only a few).
+      zypper --non-interactive --gpg-auto-import-keys refresh
+
+      # Core tools Claude Code itself shells out to.
+      zypper --non-interactive install --no-recommends \
+        bash \
+        fish \
+        ca-certificates \
+        curl \
+        wget \
+        git \
+        git-lfs \
+        ripgrep \
+        jq \
+        tar \
+        gzip \
+        unzip \
+        xz \
+        which \
+        procps \
+        less \
+        vim \
+        tmux \
+        openssh-clients \
+        sudo
+
+      # Common dev tooling.
+      zypper --non-interactive install --no-recommends \
+        gcc \
+        gcc-c++ \
+        make \
+        pkgconf \
+        patterns-devel-base-devel_basis
+
+      # Language runtimes: Python 3 + pip, Node.js + npm.
+      # Tumbleweed ships `nodejs-default` / `npm-default` which track the
+      # current default major version — no symlink juggling required.
+      zypper --non-interactive install --no-recommends \
+        python3 \
+        python3-pip \
+        python3-virtualenv \
+        nodejs-default \
+        npm-default
+
+      # fd (find replacement) and fzf (fuzzy finder) — both used heavily
+      # when shelling around a codebase.
+      zypper --non-interactive install --no-recommends fd fzf || true
+
+  # --- GitHub CLI (gh) from the official zypper repo -----------------------
+  - mode: system
+    script: |
+      #!/usr/bin/env bash
+      set -eux -o pipefail
+      if command -v gh >/dev/null 2>&1; then
+        exit 0
+      fi
+      rpm --import https://cli.github.com/packages/rpm/gh-cli.pub || true
+      zypper --non-interactive addrepo --refresh \
+        https://cli.github.com/packages/rpm/gh-cli.repo || true
+      zypper --non-interactive --gpg-auto-import-keys refresh
+      zypper --non-interactive install --no-recommends gh || true
+
+  # --- Install Claude Code + uv for the default user -----------------------
+  # NOTE: mode is "system" (not "user") because Tumbleweed ships with
+  # SELinux Enforcing, which blocks Lima's sudo-based user-mode scripts.
+  # Even `sudo -iu $LIMA_USER` and `su - $LIMA_USER` fail from the
+  # cloud-init context — SELinux denies the transition into a user shell
+  # (`sudo: unable to execute /bin/bash: Permission denied`), regardless
+  # of which user-switch tool we use. Working around it by setting
+  # SELinux to permissive for provisioning (and leaving it that way —
+  # this is a dev VM; flip it back to enforcing in /etc/selinux/config
+  # if you need the strict policy).
+  - mode: system
+    script: |
+      #!/usr/bin/env bash
+      set -eux -o pipefail
+      # Drop SELinux to permissive so the cloud-init context can
+      # transition into a user shell via sudo -iu. Persist by editing
+      # the config so it survives reboots.
+      setenforce 0 2>/dev/null || true
+      if [ -f /etc/selinux/config ]; then
+        sed -i 's/^SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config || true
+      fi
+      LIMA_USER=$(awk -F= '/^LIMA_CIDATA_USER/{print $2}' /mnt/lima-cidata/lima.env 2>/dev/null || echo "$(ls /home | head -1)")
+      sudo -iu "$LIMA_USER" bash <<'USEREOF'
+        set -eux -o pipefail
+        export PATH="$HOME/.local/bin:$PATH"
+
+        # Ensure ~/.local/bin is on PATH for future shells.
+        if ! grep -q 'HOME/.local/bin' "$HOME/.bashrc" 2>/dev/null; then
+          printf '\n# Added by Lima claude-code provisioning\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$HOME/.bashrc"
+        fi
+
+        # --- Claude Code ---
+        if ! command -v claude >/dev/null 2>&1; then
+          curl -fsSL https://claude.ai/install.sh | bash
+        fi
+
+        # --- uv (Astral's Python package/project manager) ---
+        if ! command -v uv >/dev/null 2>&1; then
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+        fi
+
+        # --- Sensible git defaults ---
+        git config --global --get init.defaultBranch >/dev/null 2>&1 || \
+          git config --global init.defaultBranch main
+        git config --global --get pull.rebase >/dev/null 2>&1 || \
+          git config --global pull.rebase false
+
+        # --- Selectively share history/settings from the host ~/.claude ---
+        # VM has its own auth (.credentials.json + ~/.claude.json) on VM
+        # disk — sharing oauth state between host and VM caused session
+        # conflicts across restarts. We only symlink the bits worth sharing:
+        # projects, history, settings, memory, agents, todos, plans.
+        # Everything else (auth, cache, sessions, telemetry) stays VM-local.
+        if [ -d /home/mike/.claude ]; then
+          mkdir -p "$HOME/.claude"
+          for item in projects history.jsonl settings.json CLAUDE.md agents todos plans vm-fish; do
+            src="/home/mike/.claude/$item"
+            dst="$HOME/.claude/$item"
+            if [ -e "$dst" ] || [ -L "$dst" ]; then
+              rm -rf "$dst"
+            fi
+            ln -s "$src" "$dst"
+          done
+        fi
+
+        # --- Persistent fish history via the mounted ~/.claude/vm-fish ---
+        mkdir -p /home/mike/.claude/vm-fish
+        touch /home/mike/.claude/vm-fish/fish_history
+        mkdir -p "$HOME/.local/share/fish"
+        ln -sf /home/mike/.claude/vm-fish/fish_history "$HOME/.local/share/fish/fish_history"
+      USEREOF
+
+      # Symlink user-installed binaries into /usr/local/bin so they're on PATH
+      # for non-interactive shells (e.g. `limactl shell <vm> claude` from the
+      # host runs bash non-interactively and skips ~/.bashrc). Resolve the
+      # user's real home via getent — Lima sometimes places it at
+      # /home/$USER.guest when /home/$USER is taken by a host mount.
+      LIMA_HOME=$(getent passwd "$LIMA_USER" | cut -d: -f6)
+      ln -sf "$LIMA_HOME/.local/bin/claude" /usr/local/bin/claude
+      ln -sf "$LIMA_HOME/.local/bin/uv"     /usr/local/bin/uv
+
+# --- Readiness probes: fail fast if provisioning is broken -------------------
+probes:
+  - description: "core CLI tools (git, curl, rg, jq) are installed"
+    script: |
+      #!/usr/bin/env bash
+      set -eu
+      for bin in git curl rg jq tar unzip; do
+        if ! timeout 30s bash -c "until command -v $bin >/dev/null 2>&1; do sleep 1; done"; then
+          echo >&2 "$bin not found"
+          exit 1
+        fi
+      done
+    hint: |
+      Core tools did not install. Check `limactl shell claude-code -- sudo zypper refresh`.
+
+  - description: "python3 and node are installed"
+    script: |
+      #!/usr/bin/env bash
+      set -eu
+      timeout 30s bash -c 'until command -v python3 >/dev/null 2>&1; do sleep 1; done'
+      timeout 30s bash -c 'until command -v node    >/dev/null 2>&1; do sleep 1; done'
+    hint: "python3 / node missing — see system provisioning logs."
+
+  - description: "claude CLI is installed for the default user"
+    script: |
+      #!/usr/bin/env bash
+      set -eu
+      timeout 120s bash -c 'until [ -x "$HOME/.local/bin/claude" ] || command -v claude >/dev/null 2>&1; do sleep 2; done'
+    hint: |
+      Claude Code was not installed. Re-run provisioning or install manually:
+        curl -fsSL https://claude.ai/install.sh | bash
+
+  - description: "uv is installed for the default user"
+    script: |
+      #!/usr/bin/env bash
+      set -eu
+      timeout 120s bash -c 'until [ -x "$HOME/.local/bin/uv" ] || command -v uv >/dev/null 2>&1; do sleep 2; done'
+    hint: |
+      uv was not installed. Install manually:
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# --- Notify user on first login ---------------------------------------------
+message: |
+  -------------------------------------------------------------------
+  Claude Code VM is ready.
+
+  Shell in:   limactl shell claude-code
+  Then run:   claude
+
+  Your host ~/.claude is shared in, so history/settings/memory persist
+  across rebuilds. No *project* folders are mounted by default. To share
+  one, stop the VM and start it again with --mount=<path>[:w], e.g.:
+    limactl stop claude-code && limactl delete claude-code
+    limactl start --name=claude-code \
+      --mount="$HOME/Developement/my-project:w" \
+      ~/lima-specs/claude-code.yaml
+
+  Installed: git, curl, ripgrep, jq, gh, fd, fzf, tmux, vim,
+             python3+pip, nodejs+npm, uv, claude
+  -------------------------------------------------------------------
