@@ -1,5 +1,6 @@
 return {
   'navarasu/onedark.nvim',
+  priority = 1000, -- load the colorscheme before other start plugins
   opts = {
     -- custom options here
   },
