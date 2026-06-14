@@ -214,9 +214,7 @@ return {
             },
           },
         },
-        volar = {},
         yamlls = {},
-        gopls = {},
         html = {},
 
         lua_ls = {
