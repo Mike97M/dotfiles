@@ -11,5 +11,7 @@ return {
   opts = {
     -- suppressed_dirs = { '~/', '~/Projects', '~/Downloads', '/' },
     -- log_level = 'debug',
+    -- nvim-tree windows don't restore cleanly, so close the tree before saving.
+    pre_save_cmds = { 'NvimTreeClose' },
   },
 }

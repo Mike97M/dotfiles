@@ -160,6 +160,18 @@ return {
       -- Setup mason first before configuring servers
       require('mason').setup()
 
+      -- mason-lspconfig only installs LSP servers, so install other tools
+      -- (formatters/linters) such as stylua through Mason's registry directly.
+      local registry = require 'mason-registry'
+      registry.refresh(function()
+        for _, name in ipairs { 'stylua' } do
+          local ok, pkg = pcall(registry.get_package, name)
+          if ok and not pkg:is_installed() then
+            pkg:install()
+          end
+        end
+      end)
+
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -233,13 +245,14 @@ return {
         },
       }
 
-      -- Setup mason-lspconfig to automatically install and configure servers
+      -- Let mason-lspconfig install the servers; enabling is done manually below
+      -- (its automatic_enable defaults to true and would enable them a second time).
       require('mason-lspconfig').setup({
         ensure_installed = vim.tbl_keys(servers),
-        automatic_installation = true,
+        automatic_enable = false,
       })
 
-      -- Setup handlers for LSP servers
+      -- Register each server's config (with cmp capabilities) and enable it once.
       for server_name, server_config in pairs(servers) do
         local config = server_config or {}
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})

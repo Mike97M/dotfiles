@@ -47,11 +47,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 local opts = { silent = true }
 vim.keymap.set('n', '<leader>ww', '<C-W>p', opts)
-vim.keymap.set('n', '<leader>wd', '<C-W>c', opts)
 vim.keymap.set('n', '<leader>wc', '<C-W>c', opts)
 vim.keymap.set('n', '<leader>w-', '<C-W>s', opts)
 vim.keymap.set('n', '<leader>w|', '<C-W>v', opts)
-vim.keymap.set('n', '<leader>w2', '<C-W>v', opts)
 vim.keymap.set('n', '<leader>wh', '<C-W>h', opts)
 vim.keymap.set('n', '<leader>wj', '<C-W>j', opts)
 vim.keymap.set('n', '<leader>wl', '<C-W>l', opts)
@@ -61,7 +59,5 @@ vim.keymap.set('n', '<leader>wJ', '<cmd>resize +5<CR>', opts)
 vim.keymap.set('n', '<leader>wL', '<C-W>5>', opts)
 vim.keymap.set('n', '<leader>wK', '<cmd>resize -5<CR>', opts)
 vim.keymap.set('n', '<leader>w=', '<C-W>=', opts)
--- vim.keymap.set('n', '<leader>ws', '<C-W>s', opts)
-vim.keymap.set('n', '<leader>wv', '<C-W>v', opts)
---
+-- <leader>ws is intentionally left unset: it maps to LSP workspace symbols.
 -- vim: ts=2 sts=2 sw=2 et
