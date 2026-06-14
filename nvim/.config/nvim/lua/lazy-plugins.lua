@@ -14,7 +14,6 @@
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  -- 'github/copilot.vim',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -26,8 +25,7 @@ require('lazy').setup({
   -- include a plugin definition from file lua/path/name.lua
 
   require 'kickstart/plugins/gitsigns',
-  -- require 'kickstart/plugins/avante',
-  -- require 'kickstart/plugins/codeium',
+
   require 'kickstart/plugins/onedark',
 
   require 'kickstart/plugins/which-key',
@@ -40,13 +38,12 @@ require('lazy').setup({
 
   require 'kickstart/plugins/cmp',
 
-  -- require 'kickstart/plugins/tokyonight',
-
   require 'kickstart/plugins/todo-comments',
 
   require 'kickstart/plugins/mini',
 
   require 'kickstart/plugins/treesitter',
+
   require 'kickstart/plugins/auto-sessions',
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
@@ -58,10 +55,6 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.nvim-tree',
   require 'kickstart.plugins.hop',
 
@@ -71,17 +64,6 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
-  --
-  -- {
-  --   'joshuavial/aider.nvim',
-  --   opts = {
-  --     -- your configuration comes here
-  --     -- if you don't want to use the default settings
-  --     auto_manage_context = true, -- automatically manage buffer context
-  --     default_bindings = true, -- use default <leader>A keybindings
-  --     debug = false, -- enable debug logging
-  --   },
-  -- },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
