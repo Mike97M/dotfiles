@@ -63,10 +63,5 @@ vim.keymap.set('n', '<leader>wK', '<cmd>resize -5<CR>', opts)
 vim.keymap.set('n', '<leader>w=', '<C-W>=', opts)
 -- vim.keymap.set('n', '<leader>ws', '<C-W>s', opts)
 vim.keymap.set('n', '<leader>wv', '<C-W>v', opts)
-
-vim.keymap.set('n', '<leader>wh', '<C-w>h')
-vim.keymap.set('n', '<leader>wj', '<C-w>j')
-vim.keymap.set('n', '<leader>wk', '<C-w>k')
-vim.keymap.set('n', '<leader>wl', '<C-w>l')
 --
 -- vim: ts=2 sts=2 sw=2 et
