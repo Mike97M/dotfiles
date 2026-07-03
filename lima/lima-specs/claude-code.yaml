@@ -59,6 +59,14 @@ cpus: 4
 memory: "8GiB"
 disk: "60GiB"
 
+# --- Persistent data disk ------------------------------------------------------
+# Docker's data-root lives on a separate Lima disk so images and volumes
+# survive `limactl delete` + rebuild. Create it once:
+#   limactl disk create docker-data --size 30GiB
+# It only dies via `limactl disk delete docker-data`.
+additionalDisks:
+  - name: "docker-data"
+
 # --- Mounts ------------------------------------------------------------------
 # The host ~/.claude is shared into the VM (writable) so Claude Code history,
 # settings, memory, agents, and projects persist across VM rebuilds — delete
@@ -155,6 +163,21 @@ provision:
         https://cli.github.com/packages/rpm/gh-cli.repo || true
       zypper --non-interactive --gpg-auto-import-keys refresh
       zypper --non-interactive install --no-recommends gh || true
+
+  # --- Docker with data-root on the persistent disk -------------------------
+  # Lima auto-formats and mounts the docker-data disk at /mnt/lima-docker-data.
+  # daemon.json must point there BEFORE docker first starts, or it populates
+  # the VM-local /var/lib/docker instead.
+  - mode: system
+    script: |
+      #!/usr/bin/env bash
+      set -eux -o pipefail
+      zypper --non-interactive install --no-recommends docker
+      mkdir -p /mnt/lima-docker-data/docker /etc/docker
+      printf '{"data-root": "/mnt/lima-docker-data/docker"}\n' > /etc/docker/daemon.json
+      LIMA_USER=$(awk -F= '/^LIMA_CIDATA_USER/{print $2}' /mnt/lima-cidata/lima.env 2>/dev/null || echo "$(ls /home | head -1)")
+      usermod -aG docker "$LIMA_USER"
+      systemctl enable --now docker
 
   # --- Install Claude Code + uv for the default user -----------------------
   # NOTE: mode is "system" (not "user") because Tumbleweed ships with
@@ -294,6 +317,9 @@ message: |
       --mount="$HOME/Developement/my-project:w" \
       ~/lima-specs/claude-code.yaml
 
+  Docker data lives on the persistent "docker-data" Lima disk, so images
+  and volumes also survive rebuilds.
+
   Installed: git, curl, ripgrep, jq, gh, fd, fzf, tmux, vim,
-             python3+pip, nodejs+npm, uv, claude
+             python3+pip, nodejs+npm, uv, claude, docker
   -------------------------------------------------------------------

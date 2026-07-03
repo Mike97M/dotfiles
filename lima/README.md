@@ -23,6 +23,9 @@ sudo zypper install lima qemu qemu-ovmf-x86_64
 ### Create the VM (one-time)
 
 ```bash
+# persistent disk for docker data — survives VM delete/rebuild
+limactl disk create docker-data --size 30GiB
+
 limactl start --name=claude-code ~/lima-specs/claude-code.yaml
 ```
 
@@ -57,7 +60,7 @@ cc-mount ~/Developement/another-project
 
 - **Tools:** git, curl, ripgrep, jq, gh, fd, fzf, tmux, vim
 - **Runtimes:** Python 3 + pip + virtualenv, Node.js + npm, uv
-- **Dev:** gcc, g++, make, pkgconf
+- **Dev:** gcc, g++, make, pkgconf, docker
 - **Claude Code:** installed via official installer
 
 ## Notes
@@ -65,6 +68,10 @@ cc-mount ~/Developement/another-project
 - The host `~/.claude` is shared into the VM, so Claude Code history, settings,
   memory, agents, and projects persist even after you delete and rebuild the
   image — only auth/cache/sessions stay VM-local to avoid oauth conflicts
+- Docker's `data-root` is on the `docker-data` Lima disk (create once with
+  `limactl disk create docker-data --size 30GiB`), so images and volumes
+  survive VM delete/rebuild — the disk only dies via
+  `limactl disk delete docker-data`
 - VM uses openSUSE Tumbleweed (rolling release) with SELinux enforcing
 - `mountType: virtiofs` is used (experimental on Linux, but fast)
 - UEFI firmware points to `/usr/share/qemu/ovmf-x86_64-4m.bin` (openSUSE-specific path)
